@@ -153,6 +153,20 @@ ON st.sales_type_id = s.sales_type_id
 
 -- 2# Get a list of sales with the VIN of the vehicle, the first name and last name of the customer, first name and last name of the employee who made the sale and the name, city and state of the dealership.
 
+SELECT 
+v.vin,
+c.first_name as customer_first_name, 
+c.last_name as customer_last_name,
+e.first_name,
+e.last_name,
+d.business_name,
+d.city,
+d.state
+FROM sales s
+JOIN vehicles v ON s.vehicle_id = v.vehicle_id
+JOIN customers c ON s.customer_id = c.customer_id
+JOIN employees e ON s.employee_id = e.employee_id
+JOIN dealerships d ON s.dealership_id = d.dealership_id;
 
 -- 3# Get a list of all the dealerships and the employees, if any, working at each one.
 -- 4# Get a list of vehicles with the names of the body type, make, model and color.
