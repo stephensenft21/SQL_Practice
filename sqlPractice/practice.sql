@@ -28,7 +28,10 @@ from Customers c
 
 -- #1 Customers who are from Texas:
 SELECT
-	c.last_name, c.first_name, c.city, c.state
+	c.last_name, 
+	c.first_name, 
+	c.city, 
+	c.state
 FROM
 	customers c
 WHERE
@@ -121,9 +124,39 @@ SELECT *, purchase_date AS "list of sales from the last two years" FROM sales
 WHERE purchase_date  > '8-31-2018' 
 ORDER BY purchase_date ASC
 
--- Get a list of sales where the deposit was above 5000 or the customer payed with American Express.
+-- #3 Get a list of sales where the deposit was above 5000 or the customer payed with American Express.
+SELECT * 
+FROM Sales 
+WHERE deposit > 5000
+or payment_method 
+LIKE '%American Express%'
+ORDER BY deposit ASC;
 
--- Get a list of employees whose first names start with "M" or ends with "E".
--- Get a list of employees whose phone numbers have the 600 area code.
+-- #4 Get a list of employees whose first names start with "M" or ends with "E".
+SELECT first_name FROM Employees
+Where first_name LIKE 'M%' OR first_name LIKE '%e'
+
+-- #5 Get a list of employees whose phone numbers have the 600 area code.
+SELECT phone 
+FROM employees 
+Where phone LIKE '600%'
+
+-- Practice: BOOK 2 CHAPTER 3 
+    -- Carnival
+
+
+-- 1# Get a list of the sales that was made for each sales type.
+SELECT s.*, st.name 
+FROM SALES s
+INNER JOIN salestypes st 
+ON st.sales_type_id = s.sales_type_id
+
+-- 2# Get a list of sales with the VIN of the vehicle, the first name and last name of the customer, first name and last name of the employee who made the sale and the name, city and state of the dealership.
+
+
+-- 3# Get a list of all the dealerships and the employees, if any, working at each one.
+-- 4# Get a list of vehicles with the names of the body type, make, model and color.
+
+
 
 
