@@ -276,11 +276,22 @@ ORDER BY COUNT(s.employee_id) DESC
 
 
 -- 1# Write a query that shows the total purchase sales income per dealership.
-
+SELECT d.business_name,
+SUM(s.price) AS total_purchase_income, Count(s.sale_id)
+FROM sales s
+JOIN dealerships d ON s.dealership_id = d.dealership_id
+GROUP BY d.dealership_id
+ORDER BY SUM(s.price) DESC
 
 
 
 -- 2# Write a query that shows the purchase sales income per dealership for the current month.
+SELECT d.business_name, DATE_TRUNC('month',s.purchase_date) AS month,
+SUM(s.price) AS total_purchase_income, Count(s.sale_id)
+FROM sales s
+JOIN dealerships d ON s.dealership_id = d.dealership_id
+-- WHERE s.purchase_date = CURRENT_DATE
+GROUP BY d.dealership_id, s.purchase_date
 -- 3# Write a query that shows the purchase sales income per dealership for the current year.
 
 --  Lease Income by Dealership
@@ -311,4 +322,82 @@ ORDER BY COUNT(s.employee_id) DESC
 
 
 
--- Practice: BOOK 2 CHAPTER 9
+-- Practice: BOOK 2 CHAPTER 10
+
+-- Employee Reports
+
+
+-- 1# How many emloyees are there for each role?
+-- 2# How many finance managers work at each dealership?
+-- 3# Get the names of the top 3 employees who work shifts at the most dealerships?
+-- 4# Get a report on the top two employees who has made the most sales through leasing vehicles.
+
+
+
+
+
+
+-- Practice: BOOK 2 CHAPTER 11	
+
+-- Carnival Customers
+
+-- In these exercises, you will be using data from the Customers table. You will need to use the following concepts.
+
+-- Sub-queries or CTE
+-- AVG() function
+-- COUNT() function
+-- JOIN
+-- GROUP BY
+-- ORDER BY
+-- LIMIT
+--------------------------------------------------------------------------------------------------------------------
+
+
+-- 1# States With Most Customers
+-- 2# What are the top 5 US states with the most customers who have purchased a vehicle from a dealership participating in the Carnival platform?
+-- 3# What are the top 5 US zipcodes with the most customers who have purchased a vehicle from a dealership participating in the Carnival platform?
+-- 4# What are the top 5 dealerships with the most customers?
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Practice: BOOK 2 CHAPTER 12
+
+-- Views
+
+-- Advantages of Using Views
+-- Views can simplify complex queries that contain data from multiple tables and/or do aggregate functions.
+-- A view can limit the degree of exposure of the underlying tables to the outer world. If you have a table with sensitive information. You can create a view that limits the data shown from the table and give users only the view.
+-- Views can simplify the presented data. You could have a different view for smaller, filtered subsets of data from a larger table.
+-- Because only the query is stored and not the result set, they take up very little storage space.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Practice: Carnival Views
+
+-- 1# Create a view that lists all vehicle body types, makes and models.
+-- 2# Create a view that shows the total number of employees for each employee type.
+-- 3# Create a view that lists all customers without exposing their emails, phone numbers and street address.
+-- 4# Create a view named sales2018 that shows the total number of sales for each sales type for the year 2018.
+-- 5# Create a view that shows the employee at each dealership with the most number of sales.
+
+
+
+-- Practice: BOOK 2 CHAPTER 13
+
+-- Converting Your Practice Queries into Views
+-- It's time to convert some of your report queries into views so that other database developers, and application developers can quickly gain access to useful reports without having to write their own SQL.
+
+-- Review all of the queries that you wrote for chapters 8, 9, 10, and 11.
+-- Determine which of those views you feel would be most useful over time. Consider the view itself, or how it could be integrated into another query and/or view.
+-- If there were several software applications written that access this database (e.g. HR applications, sales/tax applications, online purchasing applications, etc.), which, if any of your queries should be converted into views that multiple applications would like use?
+-- Be prepared to discuss, and defend your choices in the next class.
+
+
