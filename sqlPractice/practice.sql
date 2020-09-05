@@ -188,6 +188,44 @@ JOIN vehiclemodels mo ON vt.model_id = mo.vehicle_model_id
 
 
 
+SELECT
+d.business_name, 
+st.name, Count(s.sale_id) AS number_of_sales
+FROM dealerships d 
+JOIN sales s ON s.dealership_id = d.dealership_id
+JOIN salestypes st ON s.sales_type_id = st.sales_type_id
+-- WHERE st.sales_type_id = 2
+GROUP BY d.dealership_id, st.sales_type_id
+ORDER BY d.dealership_id
 
 
+SELECT
+d.business_name, 
+st.name, Count(s.sale_id) AS number_of_sales
+FROM dealerships d 
+JOIN sales s ON s.dealership_id = d.dealership_id
+JOIN salestypes st ON s.sales_type_id = st.sales_type_id
+-- WHERE st.sales_type_id = 2
+GROUP BY d.dealership_id, st.sales_type_id
+ORDER BY d.dealership_id
 
+
+SELECT mo.name, COUNT(s.sale_id) AS lease_count
+FROM sales s
+JOIN salestypes st ON st.sales_type_id = s.sales_type_id
+JOIN vehicles v ON s.vehicle_id = v.vehicle_id
+JOIN vehicletypes vt ON v.vehicle_type_id = vt.vehicle_type_id
+JOIN vehiclemodels mo ON vt.model_id = mo.vehicle_model_id
+WHERE s.sales_type_id = 2 
+GROUP BY mo.vehicle_model_id
+ORDER BY COUNT(s.sale_id) DESC;
+
+
+SELECT ma.name AS make_name, COUNT(s.sale_id) AS number_of_sales
+FROM sales s
+JOIN salestypes st ON st.sales_type_id = s.sales_type_id
+JOIN vehicles v ON s.vehicle_id = v.vehicle_id
+JOIN vehicletypes vt ON v.vehicle_type_id = vt.vehicle_type_id
+JOIN vehiclemakes ma ON vt.make_id = ma.vehicle_make_id
+GROUP BY ma.vehicle_make_id
+ORDER BY COUNT(s.sale_id) DESC;
