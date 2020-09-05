@@ -250,3 +250,65 @@ WHERE ma.vehicle_make_id =
 )
 GROUP BY et.employee_type_id
 ORDER BY COUNT(s.employee_id) DESC
+
+
+
+
+
+-- Practice: BOOK 2 CHAPTER 8
+-- Carnival
+-- In this chapter, you are going to practice using filters and joins to produce different sales reports for the Carnival platform.
+
+-- You will be using the following SQL keywords/functions.
+
+-- SELECT
+-- FROM
+-- JOIN
+-- GROUP BY
+-- ORDER BY
+-- WHERE
+-- AND
+-- SUM()
+-- MAX()
+-----------------------------------------------------------------------------------------------------------------------------------
+
+-- Purchase Income by Dealership
+
+
+-- 1# Write a query that shows the total purchase sales income per dealership.
+
+
+
+
+-- 2# Write a query that shows the purchase sales income per dealership for the current month.
+-- 3# Write a query that shows the purchase sales income per dealership for the current year.
+
+--  Lease Income by Dealership
+-- 4# Write a query that shows the total lease income per dealership.
+-- 5# Write a query that shows the lease income per dealership for the current month.
+-- 6# Write a query that shows the lease income per dealership for the current year.
+
+--  Total Income by Employee
+-- 7# Write a query that shows the total income (purchase and lease) per employee.
+
+
+
+-- Practice: BOOK 2 CHAPTER 9
+
+-- Carnival Inventory
+
+-- In this chapter, you will be writing queries to produce reports about the inventory of vehicles at dealerships on the Carnival platform.
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Available Models
+-- 1# Which model of vehicle has the lowest current inventory? This will help dealerships know which models the purchase from manufacturers.
+-- 2# Which model of vehicle has the highest current inventory? This will help dealerships know which models are, perhaps, not selling.
+-- Diverse Dealerships
+-- 3# Which dealerships are currently selling the least number of vehicle models? This will let dealerships market vehicle models more effectively per region.
+-- 4# Which dealerships are currently selling the highest number of vehicle models? This will let dealerships know which regions have either a high population, or less brand loyalty.
+
+
+
+
+
+-- Practice: BOOK 2 CHAPTER 9
