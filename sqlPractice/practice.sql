@@ -286,19 +286,53 @@ ORDER BY SUM(s.price) DESC
 
 
 -- 2# Write a query that shows the purchase sales income per dealership for the current month.
-SELECT d.business_name, DATE_TRUNC('month',s.purchase_date) AS month,
+SELECT d.business_name,
 SUM(s.price) AS total_purchase_income, Count(s.sale_id)
 FROM sales s
 JOIN dealerships d ON s.dealership_id = d.dealership_id
--- WHERE s.purchase_date = CURRENT_DATE
-GROUP BY d.dealership_id, s.purchase_date
+WHERE s.purchase_date >= '2020-04-01'
+AND s.purchase_date  <= '2020-04-30'
+GROUP BY d.dealership_id, s.purchase_date;
 -- 3# Write a query that shows the purchase sales income per dealership for the current year.
-
+SELECT d.business_name,s.purchase_date,
+SUM(s.price) AS total_purchase_income, Count(s.sale_id)
+FROM sales s
+JOIN dealerships d ON s.dealership_id = d.dealership_id
+WHERE s.purchase_date >= '2020-01-01'
+AND s.purchase_date  <= '2020-12-31'
+GROUP BY d.dealership_id, s.purchase_date
+ORDER BY s.purchase_date ASC;
 --  Lease Income by Dealership
--- 4# Write a query that shows the total lease income per dealership.
--- 5# Write a query that shows the lease income per dealership for the current month.
--- 6# Write a query that shows the lease income per dealership for the current year.
+-- 4# Write a query that shows the lease income per dealership for the current month.
+SELECT d.business_name, st.sales_type_id,
+SUM(s.price) AS total_lease_income, Count(s.sale_id)
+FROM sales s
+JOIN dealerships d ON s.dealership_id = d.dealership_id
+JOIN salestypes st ON s.sales_type_id = st.sales_type_id
+WHERE st.sales_type_id = 2 AND s.purchase_date >= '2020-04-01'
+AND s.purchase_date  <= '2020-04-30'
+GROUP BY d.dealership_id,st.sales_type_id
+ORDER BY SUM(s.price) DESC
 
+-- 5# Write a query that shows the total lease income per dealership.
+SELECT d.business_name, st.sales_type_id,
+SUM(s.price) AS total_lease_income, Count(s.sale_id)
+FROM sales s
+JOIN dealerships d ON s.dealership_id = d.dealership_id
+JOIN salestypes st ON s.sales_type_id = st.sales_type_id
+WHERE st.sales_type_id = 2
+GROUP BY d.dealership_id,st.sales_type_id
+ORDER BY SUM(s.price) DESC
+-- 6# Write a query that shows the lease income per dealership for the current year.
+SELECT d.business_name, st.sales_type_id,
+SUM(s.price) AS total_lease_income, Count(s.sale_id)
+FROM sales s
+JOIN dealerships d ON s.dealership_id = d.dealership_id
+JOIN salestypes st ON s.sales_type_id = st.sales_type_id
+WHERE st.sales_type_id = 2 AND s.purchase_date >= '2020-01-01'
+AND s.purchase_date  <= '2020-12-31'
+GROUP BY d.dealership_id,st.sales_type_id
+ORDER BY SUM(s.price) DESC
 --  Total Income by Employee
 -- 7# Write a query that shows the total income (purchase and lease) per employee.
 
@@ -313,7 +347,33 @@ GROUP BY d.dealership_id, s.purchase_date
 
 -- Available Models
 -- 1# Which model of vehicle has the lowest current inventory? This will help dealerships know which models the purchase from manufacturers.
+SELECT 
+COUNT(v.vehicle_type_id) AS current_inventory,
+vm.name, 
+vm.vehicle_model_id
+FROM
+vehicles v
+JOIN vehicletypes vt ON v.vehicle_type_id = vt.vehicle_type_id
+JOIN vehiclemodels vm ON vt.model_id = vm.vehicle_model_id
+GROUP BY vm.vehicle_model_id
+ORDER BY COUNT(v.vehicle_type_id)
+
+	-- ANSWER: ATLAS
+
 -- 2# Which model of vehicle has the highest current inventory? This will help dealerships know which models are, perhaps, not selling.
+SELECT 
+COUNT(v.vehicle_type_id) AS current_inventory,
+vm.name, 
+ma.name,
+vm.vehicle_model_id
+FROM
+vehicles v
+JOIN vehicletypes vt ON v.vehicle_type_id = vt.vehicle_type_id
+JOIN vehiclemodels vm ON vt.model_id = vm.vehicle_model_id
+JOIN vehiclemakes ma ON vt.make_id = ma.vehicle_make_id
+GROUP BY vm.vehicle_model_id ,ma.name
+ORDER BY COUNT(v.vehicle_type_id) DESC
+
 -- Diverse Dealerships
 -- 3# Which dealerships are currently selling the least number of vehicle models? This will let dealerships market vehicle models more effectively per region.
 -- 4# Which dealerships are currently selling the highest number of vehicle models? This will let dealerships know which regions have either a high population, or less brand loyalty.
