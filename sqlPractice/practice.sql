@@ -364,14 +364,13 @@ ORDER BY COUNT(v.vehicle_type_id)
 SELECT 
 COUNT(v.vehicle_type_id) AS current_inventory,
 vm.name, 
-ma.name,
-vm.vehicle_model_id
+ma.name
 FROM
 vehicles v
 JOIN vehicletypes vt ON v.vehicle_type_id = vt.vehicle_type_id
 JOIN vehiclemodels vm ON vt.model_id = vm.vehicle_model_id
 JOIN vehiclemakes ma ON vt.make_id = ma.vehicle_make_id
-GROUP BY vm.vehicle_model_id ,ma.name
+GROUP BY vm.vehicle_model_id, ma.name
 ORDER BY COUNT(v.vehicle_type_id) DESC
 
 -- Diverse Dealerships
@@ -459,5 +458,121 @@ ORDER BY COUNT(v.vehicle_type_id) DESC
 -- Determine which of those views you feel would be most useful over time. Consider the view itself, or how it could be integrated into another query and/or view.
 -- If there were several software applications written that access this database (e.g. HR applications, sales/tax applications, online purchasing applications, etc.), which, if any of your queries should be converted into views that multiple applications would like use?
 -- Be prepared to discuss, and defend your choices in the next class.
+
+
+
+-- Creating Carnival Reports
+-- Carnival would like to harness the full power of reporting. Let's begin to look further at querying the data in our tables. Carnival would like to understand more about thier business and needs you to help them build some reports.
+
+-- Goal
+-- Below are some desired reports that Carnival would like to see. Use your query knowledge to find the following metrics.
+
+-- Employee Reports
+-- Best Sellers
+
+
+-- Who are the top 5 employees for generating sales income?
+Select sum(s.price) as total_sales_income, e.first_name, e.last_name
+FROM Sales s
+Join Employees e ON s.employee_id = e.employee_id
+Group By e.first_name, e.last_name
+Order BY sum(s.price) DESC
+LIMIT 5;
+
+-- Who are the top 5 dealership for generating sales income?
+
+Select sum(s.price) , d.business_name
+FROM Sales s
+Join Dealerships d ON s.dealership_id = d.dealership_id
+Group By d.business_name
+Order BY sum(s.price) DESC
+LIMIT 5;
+
+
+
+-- Which vehicle model generated the most sales income?
+
+
+SELECT sum(s.price), vm.name
+FROM Sales s
+JOIN Vehicles v ON s.vehicle_id = v.vehicle_id
+JOIN Vehicletypes vt on v.vehicle_type_id = vt.vehicle_type_id
+JOIN Vehiclemodels vm on vt.model_id = vm.vehicle_model_id
+Group By vm.name
+Order By sum(s.price) DESC
+LIMIT 1;
+
+
+
+-- Top Performance
+
+-- Which employees generate the most income per dealership?
+
+Select sum(s.price) as total_sales_income, d.business_name, e.first_name, e.last_name
+FROM Dealerships d
+JOIN Sales s ON s.dealership_id = d.dealership_id
+JOIN Employees e ON e.employee_id = s.employee_id
+GROUP BY d.business_name, e.first_name, e.last_name
+ORDER BY sum(s.price) DESC
+
+
+-- Vehicle Reports
+-- Inventory
+-- In our Vehicle inventory, show the count of each Model that is in stock.
+SELECT
+COUNT(v.vehicle_type_id) AS current_inventory,
+vm.name,
+ma.name
+FROM
+vehicles v
+JOIN vehicletypes vt ON v.vehicle_type_id = vt.vehicle_type_id
+JOIN vehiclemodels vm ON vt.model_id = vm.vehicle_model_id
+JOIN vehiclemakes ma ON vt.make_id = ma.vehicle_make_id
+GROUP BY vm.vehicle_model_id, ma.name
+ORDER BY COUNT(v.vehicle_type_id) DESC;
+
+
+-- In our Vehicle inventory, show the count of each Make that is in stock.
+SELECT
+COUNT(ma.vehicle_make_id) AS current_inventory,
+ma.name
+FROM
+vehicles v
+JOIN vehicletypes vt ON v.vehicle_type_id = vt.vehicle_type_id
+JOIN vehiclemakes ma ON vt.make_id = ma.vehicle_make_id
+GROUP BY ma.vehicle_make_id, ma.name
+ORDER BY COUNT(ma.vehicle_make_id) DESC
+
+
+-- In our Vehicle inventory, show the count of each BodyType that is in stock.
+SELECT
+COUNT(bt.vehicle_body_type_id) AS current_inventory,
+bt.name
+FROM
+vehicles v
+JOIN vehicletypes vt ON v.vehicle_type_id = vt.vehicle_type_id
+JOIN vehiclebodytypes bt ON vt.body_type_id = bt.vehicle_body_type_id
+GROUP BY bt.vehicle_body_type_id, bt.name
+ORDER BY COUNT(bt.vehicle_body_type_id) DESC;
+
+
+-- Purchasing Power
+-- Which US state's customers have the highest average purchase price for a vehicle?
+SELECT ROUND(avg(s.price), 2) as average_purchase_price, c.state
+FROM Sales s
+JOIN Customers c ON c.customer_id = s.customer_id
+GROUP BY c.state
+ORDER BY avg(s.price) DESC
+LIMIT 1;
+
+
+-- Of the 5 US states with the most customers that you determined above, which of those have the customers with the highest average purchase price for a vehicle?
+SELECT ROUND(avg(s.price), 2) as average_purchase_price, c.state
+FROM Sales s
+JOIN Customers c ON c.customer_id = s.customer_id
+GROUP BY c.state
+ORDER BY avg(s.price) DESC
+LIMIT 5;
+
 
 
