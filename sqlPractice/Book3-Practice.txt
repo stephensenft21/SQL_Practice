@@ -45,15 +45,24 @@ SELECT *
 FROM vehicles
 WHERE vehicle_id = 2 --Creating a stored procedure to remove a vehicle from inventory whenever a vehicle is sold
         -------------------------------------------------------------
-        CREATE PROCEDURE remove_vehicle_from_inventory(vehicleId int) LANGUAGE plpgsql AS $$ BEGIN
-UPDATE vehicles v
-SET is_sold = true
-WHERE v.vehicle_id = vehicleId;
-END $$;
-CALL remove_vehicle_from_inventory(1) ------------------------------------------------------------
+        CREATE PROCEDURE remove_vehicle_from_inventory(vehicleId int) 
+        LANGUAGE plpgsql 
+        AS $$ 
+        BEGIN
+        UPDATE vehicles v
+        SET is_sold = true
+        WHERE v.vehicle_id = vehicleId;
+        END $$;
+
+
+
+
+        CALL remove_vehicle_from_inventory(5) 
+
+------------------------------------------------------------
 --Creating a stored procedure to return a sold vehicle
 ------------------------------------------------------------
-CREATE PROCEDURE return_sold_vehicle(in vehicleId int) LANGUAGE plpgsql AS $$ BEGIN
+CREATE PROCEDURE returning_sold_vehicle(in vehicleId int) LANGUAGE plpgsql AS $$ BEGIN
 UPDATE sales
 SET returned = true
 WHERE vehicle_id = vehicleId;
@@ -61,7 +70,7 @@ UPDATE vehicles
 SET is_sold = false
 WHERE vehicle_id = vehicleId;
 END $$;
-CALL return_sold_vehicle(1);
+CALL returning_sold_vehicle(1);
 -------------------------------------------------------------
 --Creating a stored procedure to return a vehicle to to inventory and change the vehicles oil
 ---------------------------------------------------------------------------------
@@ -184,4 +193,73 @@ CREATE trigger add_default_phone_number
 -- For accounting purposes, the name of the state needs to be part of the dealership's tax id. 
 -- For example, if the tax id provided is bv-832-2h-se8w for a dealership in Virginia, then it needs to be put into the database as bv-832-2h-se8w--virginia.
 ------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION set_state_in_tax_id() 
+  RETURNS TRIGGER 
+  LANGUAGE PlPGSQL
+AS $$
+BEGIN
+ 	IF OLD.tax_id NOT LIKE '%-%-%-%--%' AND NEW.tax_id NOT LIKE '%-%-%-%--%' THEN
+		NEW.tax_id := 	CONCAT(NEW.tax_id, '--', LOWER(NEW.state));
+   	END IF;
+	RETURN NEW;
+END;
+$$
+
+
+CREATE TRIGGER dealership_tax_id
+BEFORE INSERT OR UPDATE
+ON dealerships
+FOR EACH ROW EXECUTE PROCEDURE set_state_in_tax_id();
+
+
 ------------------------------------------------------------------------------------------
+
+
+
+
+-- Set up a trigger on the Sales table. When a new row is added, add a new record to the Accounts Receivable table with the deposit as credit_amount, the timestamp as date_received and the appropriate sale_id.
+
+CREATE OR replace FUNCTION new_accounts_receivable()
+	RETURNS trigger
+	LANGUAGE plpgsql
+AS $$
+BEGIN
+	INSERT INTO accounts_receivable (credit_amount, debit_amount, date_received, sale_id) 
+	VALUES (NEW.deposit, NULL, CURRENT_DATE, NEW.sale_id);
+	RETURN NULL;
+END;
+$$
+CREATE TRIGGER new_sale 
+AFTER INSERT
+ON sales
+FOR EACH ROW EXECUTE PROCEDURE new_accounts_receivable();
+INSERT INTO sales (sales_type_id, vehicle_id, employee_id, customer_id,
+				   dealership_id, price, deposit, purchase_date, 
+				   pickup_date, invoice_number, payment_method)
+VALUES(2, 2, 2, 2, 2,  99999.11, 9001, CURRENT_DATE, '09-29-2020', '1111021111', 'jcb')
+select * from sales order by sale_id desc
+select * from accounts_receivable
+
+
+-- Set up a trigger on the Sales table for when the sale_returned flag is updated. Add a new row to the Accounts Receivable table with the deposit as debit_amount, the timestamp as date_received, etc.
+CREATE OR replace FUNCTION check_account_update()
+	RETURNS trigger
+	LANGUAGE plpgsql
+AS $$
+BEGIN
+IF NEW.returned = true THEN
+	INSERT INTO accounts_receivable (debit_amount, credit_amount, date_received, sale_id) 
+	VALUES (NEW.deposit, NULL, CURRENT_DATE, NEW.sale_id);
+	RETURN NULL;
+	END IF;
+END;
+$$
+CREATE TRIGGER vehicle_returned
+AFTER UPDATE
+ON sales
+FOR EACH ROW EXECUTE PROCEDURE check_account_update();
+
+ select * from sales order by vehicle_id asc
+CALL returning_sold_vehicle(9);
+select * from accounts_receivable
