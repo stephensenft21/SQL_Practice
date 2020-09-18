@@ -263,3 +263,31 @@ FOR EACH ROW EXECUTE PROCEDURE check_account_update();
  select * from sales order by vehicle_id asc
 CALL returning_sold_vehicle(9);
 select * from accounts_receivable
+
+
+
+CREATE OR REPLACE PROCEDURE hire_employee(IN first_name varchar, last_name varchar, email_address varchar,
+										 phone varchar, employee_type_id int, is_active boolean, 
+										 dealership_one int, dealership_two int)
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+  NewEmployeeId integer;
+BEGIN
+	INSERT INTO employees(first_name,last_name,email_address,phone,employee_type_id,is_active)
+		VALUES
+		(first_name, last_name, email_address, phone, employee_type_id, is_active) 
+		RETURNING employee_id INTO NewEmployeeId;
+COMMIT;
+	INSERT INTO dealershipemployees(employee_id, dealership_id)
+		VALUES(NewEmployeeId, dealership_one);
+COMMIT;
+	INSERT INTO dealershipemployees(employee_id, dealership_id)
+		VALUES(NewEmployeeId, dealership_two);	
+END;
+$$;
+CALL hire_employee('Thomas', 'Dude', 'thomas@gmail.com', '604-976-5243', 6, true, 901, 3)
+select * from employees 
+order by employee_id desc
+select * from dealershipemployees 
+where employee_id = 1011
